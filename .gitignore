@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js build output
+.next
+out
+
+# NestJS / TypeScript build output
+dist
+*.tsbuildinfo
+
+# Database (Không đẩy dữ liệu khách hàng lên GitHub)
+*.db
+*.db-journal
+packages/database/prisma/dev.db
+
+# Media Uploads (Không đẩy ảnh/video đã đăng lên GitHub)
+uploads/*
+!uploads/.gitkeep
+
+# Environment variables (Chứa mật khẩu, đường dẫn riêng tư)
+.env
+.env.local
+
+# Tooling
+.turbo
+.eslintcache

@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model FbAccount {
+  id        String   @id @default(cuid())
+  uid       String   @unique
+  name      String?
+  cookie    String
+  token     String?
+  status    String   @default("LIVE")
+  proxy     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  content     String
+  groupIds    String
+  mediaPaths  String?  // Lưu danh sách đường dẫn file, cách nhau bằng dấu phẩy
+  status      String   @default("PENDING")
+  scheduledAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  accountCount Int @default(1)
+}
+
+model CommentCampaign {
+  id          String   @id @default(cuid())
+  groupIds    String   // Danh sách Group cần quét
+  keywords    String?  // Từ khóa (VD: "giá bao nhiêu, ib, tư vấn")
+  postIds     String?  // Danh sách Post ID cụ thể (nếu muốn)
+  commentText String   // Nội dung comment (Hỗ trợ Spintax)
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  accountCount Int @default(1)
+}
+
+model ScannedPost {
+  id         String   @id @default(cuid())
+  postId     String   // ID nội dung bài viết
+  uid        String   // Thêm: UID của tài khoản đã thực hiện comment
+  campaignId String
+  createdAt  DateTime @default(now())
+
+  // STAFF ENGINEER TIP: Tạo ràng buộc duy nhất cho cặp Post + UID 
+  // Để đảm bảo 1 acc không bao giờ comment 2 lần vào 1 bài
+  @@unique([postId, uid]) 
+}
+
+model ActionLog {
+  id        String   @id @default(cuid())
+  type      String   // POST, COMMENT, CHECK_ACC
+  status    String   // SUCCESS, FAILED, BLOCKED
+  message   String   // Chi tiết lỗi hoặc nội dung đã đăng
+  uid       String   // Tài khoản thực hiện
+  target    String?  // Group ID hoặc Post ID mục tiêu
+  createdAt DateTime @default(now())
+}
